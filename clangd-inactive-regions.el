@@ -79,8 +79,8 @@ Allowed methods:
   "Interactively select a shading METHOD to render inactive code regions."
   (interactive
    (list (let ((completion-ignore-case t)
-	       (prompt "Set inactive regions shading method: "))
-	   (completing-read prompt clangd-inactive-regions--methods nil t nil))))
+							 (prompt "Set inactive regions shading method: "))
+					 (completing-read prompt clangd-inactive-regions--methods nil t nil))))
   (unless (member method clangd-inactive-regions--methods)
     (error "Unknown shading method: %s" method))
   (setq clangd-inactive-regions-method method)
@@ -115,9 +115,9 @@ factor."
         (to-rgb (color-name-to-rgb to-color))
         (alpha (min 1.0 (max 0.0 alpha))))
     (if (and from-rgb to-rgb)
-      (apply 'color-rgb-to-hex
-             (cl-mapcar #'(lambda (a b) (+ (* a alpha) (* b (- 1.0 alpha))))
-                        from-rgb to-rgb))
+				(apply 'color-rgb-to-hex
+							 (cl-mapcar #'(lambda (a b) (+ (* a alpha) (* b (- 1.0 alpha))))
+													from-rgb to-rgb))
       'unspecified)))
 
 (defun clangd-inactive-regions-cleanup ()
@@ -299,18 +299,18 @@ Useful to update colors after a face or theme change."
   (_server (_method (eql textDocument/inactiveRegions))
            &key regions textDocument &allow-other-keys)
   "Update inactive regions when clangd reports them."
-    (if-let* ((path (expand-file-name (eglot-uri-to-path
-                                       (cl-getf textDocument :uri))))
-              (buffer (find-buffer-visiting path)))
-        (with-current-buffer buffer
-          (when clangd-inactive-regions-mode
-            (setq clangd-inactive-regions--ranges '())
-            (cl-loop
-             for r across regions
-             for (beg . end) = (eglot-range-region r)
-             do
-             (push (cons beg end) clangd-inactive-regions--ranges))
-            (clangd-inactive-regions-refresh)))))
+  (if-let* ((path (expand-file-name (eglot--uri-to-path
+                                     (cl-getf textDocument :uri))))
+            (buffer (find-buffer-visiting path)))
+      (with-current-buffer buffer
+        (when clangd-inactive-regions-mode
+          (setq clangd-inactive-regions--ranges '())
+          (cl-loop
+           for r across regions
+           for (beg . end) = (eglot--range-region r)
+           do
+           (push (cons beg end) clangd-inactive-regions--ranges))
+          (clangd-inactive-regions-refresh)))))
 
 (provide 'clangd-inactive-regions)
 
